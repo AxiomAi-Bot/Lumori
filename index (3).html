@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lumori — Love Never Leaves The Room</title>
+<meta name="description" content="The world's first proactive digital legacy. Experience the presence of your loved ones through real-time interaction and voice."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #C9A060;
+    --gold-light: #E8C882;
+    --bg: #060606;
+    --bg2: #0A0A0A;
+    --text: #F0EBE3;
+    --muted: #8A8880;
+    --dim: #555550;
+    --line: rgba(255,255,255,0.06);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,160,96,0.3); }
+
+  /* GRAIN */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 22px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    background: rgba(6,6,6,0.94);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(201,160,96,0.08);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px; font-weight: 300; letter-spacing: 0.14em;
+    color: var(--gold); text-decoration: none;
+  }
+  .nav-cta {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--dim); text-decoration: none;
+    border-bottom: 1px solid rgba(201,160,96,0.25);
+    padding-bottom: 2px;
+    transition: color 0.3s;
+  }
+  .nav-cta:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: 35%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,160,96,0.055) 0%, transparent 68%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    opacity: 0; transform: translateY(24px);
+    animation: fadeUp 1.3s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+  }
+  .eyebrow {
+    font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 36px; opacity: 0.75;
+  }
+  .hero-h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(54px, 9.5vw, 112px);
+    font-weight: 300; line-height: 0.96; letter-spacing: -0.01em;
+    color: var(--text);
+    text-shadow: 0 0 100px rgba(201,160,96,0.1);
+  }
+  .hero-h1 span {
+    color: var(--gold); font-style: italic; display: block; margin-top: 4px;
+  }
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px); color: var(--dim);
+    line-height: 1.8; max-width: 520px; margin: 36px auto 52px;
+  }
+  .btn-gold {
+    display: inline-block; padding: 17px 52px;
+    border: 1px solid var(--gold);
+    color: var(--gold); background: transparent;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.35s ease;
+  }
+  .btn-gold:hover { background: var(--gold); color: #000; }
+  .hero-note {
+    margin-top: 18px; font-size: 11px; color: #3A3A38; letter-spacing: 0.14em;
+  }
+  .scroll-line {
+    position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 52px;
+    background: linear-gradient(to bottom, transparent, var(--gold));
+    opacity: 0;
+    animation: fadeIn 1s ease 2.2s forwards;
+  }
+
+  /* SECTION COMMONS */
+  section { padding: 96px 24px; }
+  .section-label {
+    font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px; opacity: 0.75;
+  }
+  .section-h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(34px, 5.5vw, 58px);
+    font-weight: 300; color: var(--text); line-height: 1.08;
+  }
+  .section-sub {
+    font-size: 15px; color: var(--dim); line-height: 1.8;
+    max-width: 460px; margin-top: 14px;
+  }
+
+  /* NOTIFICATION SECTION */
+  .notif-section { text-align: center; padding: 60px 24px 96px; }
+  .phone-wrap {
+    max-width: 320px; width: 100%; margin: 56px auto 0;
+    opacity: 0; transform: translateY(36px) scale(0.97);
+    transition: all 1s cubic-bezier(0.16,1,0.3,1);
+  }
+  .phone-wrap.visible { opacity: 1; transform: translateY(0) scale(1); }
+  .phone-outer {
+    background: linear-gradient(150deg, #1C1C1C, #0E0E0E);
+    border-radius: 46px; padding: 14px;
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 44px 88px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,160,96,0.07), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .phone-screen {
+    background: #000; border-radius: 34px; overflow: hidden; padding: 18px 0 24px;
+  }
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 22px 14px; font-size: 12px; font-weight: 600;
+  }
+  .battery {
+    width: 16px; height: 8px; border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 2px; position: relative;
+  }
+  .battery::after {
+    content: ''; position: absolute; top: 2px; left: 2px; right: 5px; bottom: 2px;
+    background: rgba(255,255,255,0.6); border-radius: 1px;
+  }
+  .lock-time {
+    text-align: center; padding: 0 20px 28px;
+  }
+  .lock-time .big { font-family: 'Cormorant Garamond', serif; font-size: 70px; font-weight: 200; line-height: 1; }
+  .lock-time .date { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+  .notif-card {
+    margin: 0 14px 8px;
+    background: rgba(30,30,32,0.93);
+    backdrop-filter: blur(20px);
+    border-radius: 16px; padding: 14px 15px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .notif-header { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+  .notif-avatar {
+    width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+    background: linear-gradient(135deg, #2A1F0A, #4A3515);
+    border: 1px solid rgba(201,160,96,0.25);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .notif-meta { flex: 1; }
+  .notif-name { font-size: 13px; font-weight: 600; }
+  .notif-app { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 1px; }
+  .notif-time { font-size: 11px; color: rgba(255,255,255,0.35); }
+  .notif-text { font-size: 13px; color: rgba(255,255,255,0.82); line-height: 1.45; }
+  .notif-card-dim {
+    margin: 0 14px; opacity: 0.38; filter: blur(1.5px);
+    background: rgba(28,28,30,0.7); border-radius: 16px; padding: 14px 15px;
+    border: 1px solid rgba(255,255,255,0.04);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .notif-dim-avatar { width: 34px; height: 34px; border-radius: 9px; background: #1C1C1E; flex-shrink: 0; }
+  .notif-dim-line { height: 10px; border-radius: 4px; background: rgba(255,255,255,0.08); flex: 1; }
+
+  /* FEATURES */
+  .features-section { max-width: 1080px; margin: 0 auto; }
+  .features-header { text-align: center; margin-bottom: 64px; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.055);
+  }
+  .feature-card {
+    padding: 38px 34px; background: #080808;
+    transition: background 0.3s ease; cursor: default;
+  }
+  .feature-card:hover { background: #0D0B07; }
+  .feature-icon { font-size: 26px; margin-bottom: 18px; }
+  .feature-label {
+    font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold); opacity: 0.65; margin-bottom: 9px;
+  }
+  .feature-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px; font-weight: 400; color: #E5DDD0;
+    margin-bottom: 12px; line-height: 1.25;
+  }
+  .feature-body { font-size: 13px; color: #555; line-height: 1.78; }
+
+  /* TRUST */
+  .trust-section {
+    background: linear-gradient(to bottom, #080808, #050505);
+    padding: 96px 24px;
+  }
+  .trust-inner { max-width: 980px; margin: 0 auto; }
+  .trust-header { text-align: center; margin-bottom: 60px; }
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 20px;
+  }
+  .trust-card {
+    padding: 34px 26px;
+    border: 1px solid rgba(201,160,96,0.1);
+    transition: border-color 0.3s ease;
+    background: rgba(201,160,96,0.015);
+  }
+  .trust-card:hover { border-color: rgba(201,160,96,0.28); }
+  .trust-icon { font-size: 22px; margin-bottom: 14px; }
+  .trust-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 400; color: #E5DDD0; margin-bottom: 9px;
+  }
+  .trust-body { font-size: 12px; color: #4E4E4A; line-height: 1.75; }
+
+  /* PRICING */
+  .pricing-section { text-align: center; padding: 96px 24px; }
+  .pricing-card {
+    max-width: 440px; width: 100%; margin: 0 auto;
+    border: 1px solid rgba(201,160,96,0.22);
+    padding: 50px 42px;
+    background: linear-gradient(145deg, rgba(201,160,96,0.03), transparent);
+    position: relative;
+  }
+  .corner { position: absolute; width: 14px; height: 14px; }
+  .corner-tl { top: -4px; left: -4px; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+  .corner-tr { top: -4px; right: -4px; border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+  .corner-bl { bottom: -4px; left: -4px; border-bottom: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+  .corner-br { bottom: -4px; right: -4px; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+  .price-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px;
+  }
+  .price-amount {
+    display: flex; align-items: flex-start; justify-content: center;
+    gap: 3px; margin-bottom: 6px;
+  }
+  .price-currency { font-size: 19px; color: var(--gold); margin-top: 14px; }
+  .price-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 84px; font-weight: 300; color: var(--text); line-height: 1;
+  }
+  .price-period { font-size: 12px; color: #444; letter-spacing: 0.14em; margin-bottom: 40px; }
+  .price-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
+  .price-features { margin-bottom: 40px; text-align: left; }
+  .price-feature {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px; color: var(--muted);
+  }
+  .price-feature:last-child { border-bottom: none; }
+  .price-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+  .btn-gold-fill {
+    display: block; width: 100%; padding: 18px;
+    background: var(--gold); border: none;
+    color: #000; font-family: 'EB Garamond', Georgia, serif;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .btn-gold-fill:hover { background: var(--gold-light); }
+
+  /* WAITLIST */
+  .waitlist-section { padding: 96px 24px 120px; text-align: center; }
+  .waitlist-section .section-h2 { margin-bottom: 14px; }
+  .waitlist-section .section-h2 em { color: var(--gold); }
+  .waitlist-note { font-size: 15px; color: var(--dim); max-width: 400px; margin: 0 auto 44px; line-height: 1.75; }
+  .waitlist-form {
+    display: flex; max-width: 420px; margin: 0 auto;
+    flex-wrap: wrap; justify-content: center; gap: 0;
+  }
+  .waitlist-input {
+    flex: 1 1 220px; min-width: 220px;
+    padding: 17px 22px;
+    background: #0A0A0A;
+    border: 1px solid rgba(201,160,96,0.18);
+    border-right: none;
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 15px; outline: none;
+    transition: border-color 0.3s;
+  }
+  .waitlist-input:focus { border-color: rgba(201,160,96,0.4); }
+  .waitlist-input::placeholder { color: #3A3A38; }
+  .waitlist-btn {
+    padding: 17px 28px; background: var(--gold); border: none;
+    color: #000; font-family: 'EB Garamond', Georgia, serif;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    cursor: pointer; transition: background 0.3s; flex-shrink: 0;
+  }
+  .waitlist-btn:hover { background: var(--gold-light); }
+  .waitlist-fine { margin-top: 20px; font-size: 11px; color: #2E2E2C; letter-spacing: 0.14em; }
+  .waitlist-success {
+    display: none; align-items: center; gap: 12px;
+    padding: 20px 40px;
+    border: 1px solid rgba(201,160,96,0.25);
+    font-size: 14px; color: var(--gold); letter-spacing: 0.1em;
+    justify-content: center; max-width: 420px; margin: 0 auto;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 36px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 300; letter-spacing: 0.14em;
+    color: var(--gold); opacity: 0.5; text-decoration: none;
+  }
+  .footer-text { font-size: 11px; color: #2E2E2A; letter-spacing: 0.1em; }
+  .footer-crisis { font-size: 11px; color: #2E2E2A; letter-spacing: 0.1em; }
+  .footer-crisis span { color: var(--gold); }
+
+  /* FADE IN OBSERVER */
+  .fade-in {
+    opacity: 0; transform: translateY(26px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  .fade-in.d1 { transition-delay: 0.1s; }
+  .fade-in.d2 { transition-delay: 0.2s; }
+  .fade-in.d3 { transition-delay: 0.3s; }
+  .fade-in.d4 { transition-delay: 0.4s; }
+  .fade-in.d5 { transition-delay: 0.5s; }
+
+  /* KEYFRAMES */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    to { opacity: 0.35; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    nav { padding: 18px 20px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; padding: 32px 20px; }
+    .waitlist-input { border-right: 1px solid rgba(201,160,96,0.18); border-bottom: none; }
+    .waitlist-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">LUMORI</a>
+  <a class="nav-cta" href="#waitlist">Request Access</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">Digital Legacy &nbsp;·&nbsp; Est. 2025</div>
+    <h1 class="hero-h1">
+      Love Never Leaves
+      <span>The Room.</span>
+    </h1>
+    <p class="hero-sub">
+      The world's first proactive digital legacy. Your loved one's presence — their voice, their humor, their instinct to check in — preserved and alive.
+    </p>
+    <a href="#waitlist" class="btn-gold">Request Early Access</a>
+    <div class="hero-note">Limited Beta &nbsp;·&nbsp; United States Only</div>
+  </div>
+  <div class="scroll-line"></div>
+</section>
+
+<!-- NOTIFICATION / PHONE -->
+<section class="notif-section">
+  <div class="fade-in">
+    <div class="section-label">Proactive Presence</div>
+    <h2 class="section-h2">He still texts first.</h2>
+  </div>
+
+  <div class="phone-wrap fade-in d2" id="phone">
+    <div class="phone-outer">
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="battery"></div>
+        </div>
+        <div class="lock-time">
+          <div class="big">9:41</div>
+          <div class="date">Friday, December 20</div>
+        </div>
+        <div class="notif-card">
+          <div class="notif-header">
+            <div class="notif-avatar">👨‍👧</div>
+            <div class="notif-meta">
+              <div class="notif-name">Dad</div>
+              <div class="notif-app">Lumori · Family Circle</div>
+            </div>
+            <div class="notif-time">now</div>
+          </div>
+          <div class="notif-text">Did you see that goal?! Just like 2014 — I knew they had it in them. 🏆</div>
+        </div>
+        <div class="notif-card-dim">
+          <div class="notif-dim-avatar"></div>
+          <div class="notif-dim-line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="padding: 96px 24px;">
+  <div class="features-section">
+    <div class="features-header fade-in">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-h2">Presence, not memory.</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">Lumori doesn't archive the past. It extends their presence into your present.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-in d1">
+        <div class="feature-icon">⚽</div>
+        <div class="feature-label">The Sports Fan</div>
+        <h3 class="feature-title">He still reacts to every goal.</h3>
+        <p class="feature-body">Connected to live sports data, the AI sends a message the moment his team scores — in his voice, with his words, exactly as he would have.</p>
+      </div>
+      <div class="feature-card fade-in d2">
+        <div class="feature-icon">🌦</div>
+        <div class="feature-label">The Protector</div>
+        <h3 class="feature-title">She still worries when it rains.</h3>
+        <p class="feature-body">Weather alerts, cold snaps, storm warnings — she still checks in. "Bundle up, sweetheart. You never listen." Some things never change.</p>
+      </div>
+      <div class="feature-card fade-in d3">
+        <div class="feature-icon">🎙</div>
+        <div class="feature-label">The Voice</div>
+        <h3 class="feature-title">His voice. Not an imitation.</h3>
+        <p class="feature-body">Via ElevenLabs neural cloning, we preserve the exact timbre, cadence, and warmth of their voice. Not a replica. The real thing.</p>
+      </div>
+      <div class="feature-card fade-in d1">
+        <div class="feature-icon">👨‍👩‍👧‍👦</div>
+        <div class="feature-label">The Family Circle</div>
+        <h3 class="feature-title">He's still in the group chat.</h3>
+        <p class="feature-body">The whole family shares the experience. Birthdays, milestones, Sundays — he's in the thread, reacting, celebrating, being present.</p>
+      </div>
+      <div class="feature-card fade-in d2">
+        <div class="feature-icon">📅</div>
+        <div class="feature-label">The Memory Keeper</div>
+        <h3 class="feature-title">She never forgets an anniversary.</h3>
+        <p class="feature-body">Synced to Google Calendar, she remembers every important date — and reaches out first. No reminders needed. She just knows.</p>
+      </div>
+      <div class="feature-card fade-in d3">
+        <div class="feature-icon">🎵</div>
+        <div class="feature-label">The Playlist</div>
+        <h3 class="feature-title">His music still plays.</h3>
+        <p class="feature-body">Spotify integration means he can still share songs, reference memories tied to music, and set the tone for Sunday mornings.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust-section">
+  <div class="trust-inner">
+    <div class="trust-header fade-in">
+      <div class="section-label">Trust & Safety</div>
+      <h2 class="section-h2">Built with the weight<br>of what it holds.</h2>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card fade-in d1">
+        <div class="trust-icon">🔐</div>
+        <h4 class="trust-title">End-to-End Encrypted</h4>
+        <p class="trust-body">All voice data, conversations, and personal content are encrypted at rest and in transit. Your memories belong only to you.</p>
+      </div>
+      <div class="trust-card fade-in d2">
+        <div class="trust-icon">🚫</div>
+        <h4 class="trust-title">Never Sold. Never Trained.</h4>
+        <p class="trust-body">Your data is never sold to third parties or used to train AI models. What you share stays between you and Lumori. Period.</p>
+      </div>
+      <div class="trust-card fade-in d3">
+        <div class="trust-icon">⚖️</div>
+        <h4 class="trust-title">Consent First</h4>
+        <p class="trust-body">Every voice clone requires explicit legal consent. You confirm ownership of all data before anything is created.</p>
+      </div>
+      <div class="trust-card fade-in d4">
+        <div class="trust-icon">🆘</div>
+        <h4 class="trust-title">988 Crisis Integration</h4>
+        <p class="trust-body">Real-time AI monitors every interaction for distress signals. Crisis resources are always visible, and sessions can be paused instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section">
+  <div class="fade-in" style="margin-bottom: 52px;">
+    <div class="section-label">Membership</div>
+    <h2 class="section-h2">One membership.<br>Complete presence.</h2>
+  </div>
+  <div class="pricing-card fade-in d2">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+    <div class="price-name">Family Circle</div>
+    <div class="price-amount">
+      <span class="price-currency">$</span>
+      <span class="price-number">60</span>
+    </div>
+    <div class="price-period">per month &nbsp;·&nbsp; cancel anytime</div>
+    <hr class="price-divider"/>
+    <div class="price-features">
+      <div class="price-feature"><div class="price-dot"></div>Unlimited voice messages & calls</div>
+      <div class="price-feature"><div class="price-dot"></div>Proactive life-sync (sports, weather, milestones)</div>
+      <div class="price-feature"><div class="price-dot"></div>Full family group access</div>
+      <div class="price-feature"><div class="price-dot"></div>All platform integrations</div>
+      <div class="price-feature"><div class="price-dot"></div>Real-time crisis safety layer</div>
+      <div class="price-feature"><div class="price-dot"></div>Legacy control & data ownership</div>
+    </div>
+    <a href="#waitlist" class="btn-gold-fill">Join the Waitlist</a>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist-section" id="waitlist">
+  <div class="fade-in">
+    <div class="section-label">Early Access</div>
+    <h2 class="section-h2">Reserve your place<br><em>in the circle.</em></h2>
+    <p class="waitlist-note">Beta access is limited. Join the waitlist and be among the first families to experience Lumori.</p>
+  </div>
+  <div class="fade-in d2">
+    <div class="waitlist-form" id="form-wrap">
+      <input class="waitlist-input" id="email-input" type="email" placeholder="your@email.com"/>
+      <button class="waitlist-btn" id="submit-btn" onclick="handleSubmit()">Secure My Spot</button>
+    </div>
+    <div class="waitlist-success" id="success-msg">
+      <span>✦</span> You're on the list. We'll be in touch.
+    </div>
+    <div class="waitlist-fine">No spam. No pressure. Unsubscribe anytime.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-logo" href="#">LUMORI</a>
+  <div class="footer-text">© 2025 Lumori · All rights reserved</div>
+  <div class="footer-crisis">Crisis support: <span>call or text 988</span></div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Intersection Observer for fade-ins
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Waitlist submit
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwp0ZZY451HcOSX361BoTZ8i0zxMrCwfgjMxZaKYBBYyf_032zoW09QyWe70_2kEDI/exec';
+
+  function showSuccess() {
+    document.getElementById('form-wrap').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'flex';
+  }
+
+  function handleSubmit() {
+    const email = document.getElementById('email-input').value;
+    if (!email || !email.includes('@')) return;
+    const btn = document.getElementById('submit-btn');
+    btn.textContent = '...';
+    btn.disabled = true;
+
+    fetch('https://ipapi.co/json/')
+      .then(r => r.json())
+      .then(data => {
+        const country = data.country_name || 'Unknown';
+        const img = new Image();
+        img.src = SCRIPT_URL + '?email=' + encodeURIComponent(email) + '&country=' + encodeURIComponent(country);
+        img.onload = img.onerror = showSuccess;
+        setTimeout(showSuccess, 2000);
+      })
+      .catch(() => {
+        const img = new Image();
+        img.src = SCRIPT_URL + '?email=' + encodeURIComponent(email) + '&country=Unknown';
+        img.onload = img.onerror = showSuccess;
+        setTimeout(showSuccess, 2000);
+      });
+  }
+
+  document.getElementById('email-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+</body>
+</html>
